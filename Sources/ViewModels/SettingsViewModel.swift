@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// 設定画面のViewModel
+@MainActor
 @Observable
 final class SettingsViewModel {
     /// アプリ状態
@@ -72,13 +73,11 @@ final class SettingsViewModel {
     }
 
     /// 有料版を購入
-    @MainActor
     func purchasePremium() async {
         await purchaseManager.purchasePremium()
     }
 
     /// 購入を復元
-    @MainActor
     func restorePurchases() async {
         await purchaseManager.restorePurchases()
     }

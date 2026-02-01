@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// 企業一覧画面のViewModel
+@MainActor
 @Observable
 final class CompanyListViewModel {
     /// 企業リポジトリ
@@ -25,7 +26,6 @@ final class CompanyListViewModel {
     }
 
     /// 企業データを読み込む
-    @MainActor
     func loadCompanies() async {
         await companyRepository.fetchCompanies()
     }

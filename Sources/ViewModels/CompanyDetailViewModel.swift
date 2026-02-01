@@ -2,6 +2,7 @@ import SwiftUI
 import MapKit
 
 /// 企業詳細画面のViewModel
+@MainActor
 @Observable
 final class CompanyDetailViewModel {
     /// 企業

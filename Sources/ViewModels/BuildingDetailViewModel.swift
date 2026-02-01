@@ -2,6 +2,7 @@ import SwiftUI
 import MapKit
 
 /// ビル詳細画面のViewModel
+@MainActor
 @Observable
 final class BuildingDetailViewModel {
     /// ビル

@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// ビル一覧画面のViewModel
+@MainActor
 @Observable
 final class BuildingListViewModel {
     /// ビルリポジトリ
@@ -20,7 +21,6 @@ final class BuildingListViewModel {
     }
 
     /// ビルデータを読み込む
-    @MainActor
     func loadBuildings() async {
         await buildingRepository.fetchBuildings()
     }

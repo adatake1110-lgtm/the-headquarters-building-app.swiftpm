@@ -2,6 +2,7 @@ import SwiftUI
 import MapKit
 
 /// ビルマップ画面のViewModel
+@MainActor
 @Observable
 final class BuildingMapViewModel {
     /// ビルリポジトリ
@@ -38,7 +39,6 @@ final class BuildingMapViewModel {
     }
 
     /// ビルデータを読み込む
-    @MainActor
     func loadBuildings() async {
         await buildingRepository.fetchBuildings()
     }
