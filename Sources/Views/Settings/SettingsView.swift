@@ -5,6 +5,15 @@ struct SettingsView: View {
     /// ViewModel
     @State private var viewModel = SettingsViewModel()
 
+    /// 管理者認証サービス
+    @State private var adminAuthService = AdminAuthService.shared
+
+    /// 管理者ログイン画面表示
+    @State private var showAdminLogin = false
+
+    /// 管理者ダッシュボード表示
+    @State private var showAdminDashboard = false
+
     var body: some View {
         List {
             // 有料版セクション
@@ -120,8 +129,53 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            // 管理者セクション
+            Section {
+                if adminAuthService.isAdminLoggedIn {
+                    // 管理者ログイン中
+                    Button {
+                        showAdminDashboard = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.badge.shield.checkmark.fill")
+                                .foregroundStyle(AppColors.primary)
+                            Text("管理者ダッシュボード")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } else {
+                    // 未ログイン
+                    Button {
+                        showAdminLogin = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.badge.key")
+                                .foregroundStyle(.secondary)
+                            Text("管理者ログイン")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } header: {
+                Text("管理者")
+            } footer: {
+                Text("管理者のみビル・企業データの編集が可能です")
+            }
         }
         .navigationTitle("設定")
+        .sheet(isPresented: $showAdminLogin) {
+            AdminLoginView()
+        }
+        .sheet(isPresented: $showAdminDashboard) {
+            AdminDashboardView()
+        }
     }
 }
 

@@ -1,0 +1,115 @@
+rules_version = '2';
+
+// HQ Building Map - Firestore Security Rules
+//
+// 概要:
+// - 一般ユーザー: 閲覧のみ可能
+// - 管理者: 全操作可能（admin_usersコレクションに登録されているユーザー）
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // ヘルパー関数
+    // ============================================
+
+    // 認証済みかどうか
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 管理者かどうか（admin_usersコレクションに存在するか）
+    function isAdmin() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/admin_users/$(request.auth.uid));
+    }
+
+    // ============================================
+    // buildings コレクション
+    // ============================================
+    match /buildings/{buildingId} {
+      // 読み取り: 全ユーザー可
+      allow read: if true;
+
+      // 作成: 管理者のみ
+      allow create: if isAdmin() &&
+                    request.resource.data.name is string &&
+                    request.resource.data.name.size() > 0 &&
+                    request.resource.data.address is string &&
+                    request.resource.data.latitude is number &&
+                    request.resource.data.longitude is number;
+
+      // 更新: 管理者のみ
+      allow update: if isAdmin() &&
+                    request.resource.data.name is string &&
+                    request.resource.data.name.size() > 0;
+
+      // 削除: 管理者のみ
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // companies コレクション
+    // ============================================
+    match /companies/{companyId} {
+      // 読み取り: 全ユーザー可
+      allow read: if true;
+
+      // 作成: 管理者のみ
+      allow create: if isAdmin() &&
+                    request.resource.data.name is string &&
+                    request.resource.data.name.size() > 0 &&
+                    request.resource.data.building_id is string &&
+                    request.resource.data.industry is string;
+
+      // 更新: 管理者のみ
+      allow update: if isAdmin() &&
+                    request.resource.data.name is string &&
+                    request.resource.data.name.size() > 0;
+
+      // 削除: 管理者のみ
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // favorites コレクション
+    // ============================================
+    match /favorites/{favoriteId} {
+      // 読み取り: 自分のデータのみ
+      allow read: if isAuthenticated() &&
+                  resource.data.user_id == request.auth.uid;
+
+      // 作成: 認証済みユーザー（自分のデータのみ）
+      allow create: if isAuthenticated() &&
+                    request.resource.data.user_id == request.auth.uid &&
+                    request.resource.data.target_type in ['building', 'company'] &&
+                    request.resource.data.target_id is string;
+
+      // 削除: 自分のデータのみ
+      allow delete: if isAuthenticated() &&
+                    resource.data.user_id == request.auth.uid;
+
+      // 更新: 不可
+      allow update: if false;
+    }
+
+    // ============================================
+    // admin_users コレクション
+    // ============================================
+    match /admin_users/{userId} {
+      // 読み取り: 管理者のみ（または自分のドキュメント）
+      allow read: if isAuthenticated() &&
+                  (request.auth.uid == userId || isAdmin());
+
+      // 書き込み: 管理者のみ
+      allow write: if isAdmin();
+    }
+
+    // ============================================
+    // その他のコレクションはデフォルトで拒否
+    // ============================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
