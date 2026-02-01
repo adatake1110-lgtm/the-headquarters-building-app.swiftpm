@@ -1,5 +1,5 @@
 import SwiftUI
-import MapKit
+@preconcurrency import MapKit
 
 /// ストリートビュー（Look Around）表示ボタン
 struct StreetViewButton: View {
