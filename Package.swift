@@ -6,7 +6,7 @@ import AppleProductTypes
 let package = Package(
     name: "The Headquarters Building App",
     platforms: [
-        .iOS("18.0")
+        .iOS("17.0")
     ],
     products: [
         .iOSApplication(
