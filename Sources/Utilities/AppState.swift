@@ -2,6 +2,7 @@ import SwiftUI
 
 /// アプリ全体の状態を管理するクラス
 /// iOS 17以降の@Observableマクロを使用
+@MainActor
 @Observable
 final class AppState {
     /// シングルトンインスタンス

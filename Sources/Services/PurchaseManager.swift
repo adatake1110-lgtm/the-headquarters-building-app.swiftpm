@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 課金管理クラス
 /// StoreKit 2を使用した買い切り課金の管理
+@MainActor
 @Observable
 final class PurchaseManager {
     /// シングルトンインスタンス
@@ -27,7 +28,6 @@ final class PurchaseManager {
     }
 
     /// 有料版を購入
-    @MainActor
     func purchasePremium() async {
         isPurchasing = true
         errorMessage = nil
@@ -71,7 +71,6 @@ final class PurchaseManager {
     }
 
     /// 購入を復元
-    @MainActor
     func restorePurchases() async {
         isPurchasing = true
         errorMessage = nil

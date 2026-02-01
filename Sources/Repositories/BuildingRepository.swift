@@ -2,6 +2,7 @@ import Foundation
 
 /// ビルデータのリポジトリ
 /// Firestoreとの通信を抽象化
+@MainActor
 @Observable
 final class BuildingRepository {
     /// シングルトンインスタンス
@@ -23,7 +24,6 @@ final class BuildingRepository {
     }
 
     /// ビル一覧を取得
-    @MainActor
     func fetchBuildings() async {
         isLoading = true
         errorMessage = nil

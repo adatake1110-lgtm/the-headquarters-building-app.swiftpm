@@ -1,6 +1,7 @@
 import Foundation
 
 /// お気に入りデータのリポジトリ
+@MainActor
 @Observable
 final class FavoriteRepository {
     /// シングルトンインスタンス

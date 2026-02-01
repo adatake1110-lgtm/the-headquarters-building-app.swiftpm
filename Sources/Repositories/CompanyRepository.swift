@@ -2,6 +2,7 @@ import Foundation
 
 /// 企業データのリポジトリ
 /// Firestoreとの通信を抽象化
+@MainActor
 @Observable
 final class CompanyRepository {
     /// シングルトンインスタンス
@@ -23,7 +24,6 @@ final class CompanyRepository {
     }
 
     /// 企業一覧を取得
-    @MainActor
     func fetchCompanies() async {
         isLoading = true
         errorMessage = nil
