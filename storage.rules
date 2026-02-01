@@ -1,0 +1,71 @@
+rules_version = '2';
+
+// HQ Building Map - Firebase Storage Security Rules
+//
+// 概要:
+// - 画像の読み取り: 全ユーザー可
+// - 画像のアップロード/削除: 管理者のみ
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ============================================
+    // ヘルパー関数
+    // ============================================
+
+    // 認証済みかどうか
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 管理者かどうか（Firestoreのadmin_usersをチェック）
+    function isAdmin() {
+      return isAuthenticated() &&
+             firestore.exists(/databases/(default)/documents/admin_users/$(request.auth.uid));
+    }
+
+    // 画像ファイルかどうか
+    function isImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // ファイルサイズ制限（5MB以下）
+    function isValidSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // ============================================
+    // buildings フォルダ
+    // ============================================
+    match /buildings/{buildingId}/{fileName} {
+      // 読み取り: 全ユーザー可
+      allow read: if true;
+
+      // アップロード: 管理者のみ（画像ファイル、5MB以下）
+      allow create: if isAdmin() && isImageFile() && isValidSize();
+
+      // 更新: 管理者のみ
+      allow update: if isAdmin() && isImageFile() && isValidSize();
+
+      // 削除: 管理者のみ
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // companies フォルダ（将来の拡張用）
+    // ============================================
+    match /companies/{companyId}/{fileName} {
+      allow read: if true;
+      allow create: if isAdmin() && isImageFile() && isValidSize();
+      allow update: if isAdmin() && isImageFile() && isValidSize();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // その他のパスはデフォルトで拒否
+    // ============================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
