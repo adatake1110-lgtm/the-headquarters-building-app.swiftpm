@@ -18,9 +18,25 @@ final class BuildingRepository {
     private(set) var errorMessage: String?
 
     private init() {
-        // 初期データとしてモックデータを使用
-        // TODO: Firebase統合時にFirestoreから取得
-        buildings = Building.mockData
+        // CSVファイルからデータを読み込み
+        loadFromCSV()
+    }
+
+    /// CSVファイルからビルデータを読み込み
+    private func loadFromCSV() {
+        do {
+            buildings = try CSVImporter.importBuildings(from: "buildings")
+            print("✅ ビルデータを\(buildings.count)件読み込みました")
+        } catch {
+            // CSVが見つからない場合はモックデータを使用
+            print("⚠️ CSV読み込み失敗、モックデータを使用: \(error.localizedDescription)")
+            buildings = Building.mockData
+        }
+    }
+
+    /// CSVを再読み込み
+    func reloadFromCSV() {
+        loadFromCSV()
     }
 
     /// ビル一覧を取得

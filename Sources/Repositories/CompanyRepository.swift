@@ -18,9 +18,25 @@ final class CompanyRepository {
     private(set) var errorMessage: String?
 
     private init() {
-        // 初期データとしてモックデータを使用
-        // TODO: Firebase統合時にFirestoreから取得
-        companies = Company.mockData
+        // CSVファイルからデータを読み込み
+        loadFromCSV()
+    }
+
+    /// CSVファイルから企業データを読み込み
+    private func loadFromCSV() {
+        do {
+            companies = try CSVImporter.importCompanies(from: "companies")
+            print("✅ 企業データを\(companies.count)件読み込みました")
+        } catch {
+            // CSVが見つからない場合はモックデータを使用
+            print("⚠️ CSV読み込み失敗、モックデータを使用: \(error.localizedDescription)")
+            companies = Company.mockData
+        }
+    }
+
+    /// CSVを再読み込み
+    func reloadFromCSV() {
+        loadFromCSV()
     }
 
     /// 企業一覧を取得
