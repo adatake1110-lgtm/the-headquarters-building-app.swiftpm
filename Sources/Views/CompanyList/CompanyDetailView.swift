@@ -34,6 +34,14 @@ struct CompanyDetailView: View {
                 .frame(height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
+                // ストリートビュー
+                SectionView(title: "ストリートビュー") {
+                    StreetViewButton(
+                        latitude: company.latitude,
+                        longitude: company.longitude
+                    )
+                }
+
                 // 基本情報セクション
                 SectionView(title: "基本情報") {
                     InfoRow(label: "業界", value: company.industry)

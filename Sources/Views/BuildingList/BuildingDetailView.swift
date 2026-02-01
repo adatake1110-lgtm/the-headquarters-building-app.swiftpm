@@ -34,6 +34,14 @@ struct BuildingDetailView: View {
                 .frame(height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
+                // ストリートビュー
+                SectionView(title: "ストリートビュー") {
+                    StreetViewButton(
+                        latitude: building.latitude,
+                        longitude: building.longitude
+                    )
+                }
+
                 // 基本情報セクション
                 SectionView(title: "基本情報") {
                     InfoRow(label: "郵便番号", value: "〒\(building.postalCode)")
