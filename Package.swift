@@ -15,7 +15,6 @@ let package = Package(
             bundleIdentifier: "com.example.the-headquarters-building-app",
             displayVersion: "1.0",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .stackedBooks),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
                 .pad,
