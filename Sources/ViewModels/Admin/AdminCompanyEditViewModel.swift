@@ -170,7 +170,7 @@ final class AdminCompanyEditViewModel {
 
         do {
             // 企業データを作成
-            let company = Company(
+            _ = Company(
                 companyId: originalCompany?.companyId ?? UUID().uuidString,
                 name: name.trimmingCharacters(in: .whitespaces),
                 industry: industry,

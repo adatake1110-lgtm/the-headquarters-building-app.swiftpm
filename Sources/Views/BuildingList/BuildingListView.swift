@@ -5,9 +5,6 @@ struct BuildingListView: View {
     /// ViewModel
     @State private var viewModel = BuildingListViewModel()
 
-    /// アプリ状態
-    @Environment(AppState.self) private var appState
-
     var body: some View {
         List {
             ForEach(viewModel.filteredBuildings) { building in
@@ -38,10 +35,7 @@ struct BuildingListView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            // 広告バナー（無料版のみ）
-            if !appState.isPremium {
-                AdBannerView()
-            }
+            AdBannerView()
         }
         .task {
             await viewModel.loadBuildings()

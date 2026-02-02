@@ -5,9 +5,6 @@ struct CompanyListView: View {
     /// ViewModel
     @State private var viewModel = CompanyListViewModel()
 
-    /// アプリ状態
-    @Environment(AppState.self) private var appState
-
     var body: some View {
         List {
             ForEach(viewModel.filteredCompanies) { company in
@@ -38,9 +35,7 @@ struct CompanyListView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if !appState.isPremium {
-                AdBannerView()
-            }
+            AdBannerView()
         }
         .task {
             await viewModel.loadCompanies()

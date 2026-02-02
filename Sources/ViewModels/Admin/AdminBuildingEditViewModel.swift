@@ -196,7 +196,7 @@ final class AdminBuildingEditViewModel {
             }
 
             // ビルデータを作成
-            let building = Building(
+            _ = Building(
                 buildingId: originalBuilding?.buildingId ?? UUID().uuidString,
                 name: name.trimmingCharacters(in: .whitespaces),
                 postalCode: postalCode.trimmingCharacters(in: .whitespaces),
