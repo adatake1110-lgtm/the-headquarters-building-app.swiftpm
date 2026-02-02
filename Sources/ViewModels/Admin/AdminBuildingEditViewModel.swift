@@ -209,6 +209,7 @@ final class AdminBuildingEditViewModel {
                 architect: architect.isEmpty ? nil : architect,
                 constructor: constructor.isEmpty ? nil : constructor,
                 imageUrls: allImageUrls,
+                streetviewEmbed: originalBuilding?.streetviewEmbed,
                 createdAt: originalBuilding?.createdAt ?? Date(),
                 updatedAt: Date()
             )

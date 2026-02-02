@@ -180,6 +180,7 @@ final class AdminCompanyEditViewModel {
                 address: address.trimmingCharacters(in: .whitespaces),
                 latitude: Double(latitudeString) ?? 0,
                 longitude: Double(longitudeString) ?? 0,
+                streetviewEmbed: originalCompany?.streetviewEmbed,
                 createdAt: originalCompany?.createdAt ?? Date(),
                 updatedAt: Date()
             )
