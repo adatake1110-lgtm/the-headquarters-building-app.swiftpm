@@ -17,6 +17,7 @@ struct Building: Identifiable, Codable, Hashable {
     let architect: String?
     let constructor: String?
     let imageUrls: [String]
+    let streetviewEmbed: String?
     let createdAt: Date
     let updatedAt: Date
 
@@ -33,6 +34,7 @@ struct Building: Identifiable, Codable, Hashable {
         case architect
         case constructor
         case imageUrls = "image_urls"
+        case streetviewEmbed = "streetview_embed"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
@@ -72,6 +74,7 @@ extension Building {
             architect: "コーン・ペダーセン・フォックス",
             constructor: "大林組",
             imageUrls: [],
+            streetviewEmbed: nil,
             createdAt: Date(),
             updatedAt: Date()
         ),
@@ -88,6 +91,7 @@ extension Building {
             architect: "日建設計・隈研吾建築都市設計事務所・SANAA",
             constructor: "東急建設・大成建設JV",
             imageUrls: [],
+            streetviewEmbed: nil,
             createdAt: Date(),
             updatedAt: Date()
         ),
@@ -104,6 +108,7 @@ extension Building {
             architect: "スキッドモア・オーウィングズ・アンド・メリル",
             constructor: "竹中工務店",
             imageUrls: [],
+            streetviewEmbed: nil,
             createdAt: Date(),
             updatedAt: Date()
         )

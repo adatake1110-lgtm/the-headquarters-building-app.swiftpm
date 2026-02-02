@@ -14,6 +14,7 @@ struct Company: Identifiable, Codable, Hashable {
     let address: String
     let latitude: Double
     let longitude: Double
+    let streetviewEmbed: String?
     let createdAt: Date
     let updatedAt: Date
 
@@ -27,6 +28,7 @@ struct Company: Identifiable, Codable, Hashable {
         case address
         case latitude
         case longitude
+        case streetviewEmbed = "streetview_embed"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
@@ -45,6 +47,7 @@ extension Company {
             address: "東京都港区六本木6-10-1 六本木ヒルズ森タワー",
             latitude: 35.6604,
             longitude: 139.7292,
+            streetviewEmbed: nil,
             createdAt: Date(),
             updatedAt: Date()
         ),
@@ -58,6 +61,7 @@ extension Company {
             address: "東京都世田谷区玉川1-14-1",
             latitude: 35.6109,
             longitude: 139.6267,
+            streetviewEmbed: nil,
             createdAt: Date(),
             updatedAt: Date()
         ),
@@ -71,6 +75,7 @@ extension Company {
             address: "東京都渋谷区渋谷2-24-12 渋谷スクランブルスクエア",
             latitude: 35.6580,
             longitude: 139.7016,
+            streetviewEmbed: nil,
             createdAt: Date(),
             updatedAt: Date()
         ),
@@ -84,6 +89,7 @@ extension Company {
             address: "東京都港区赤坂9-7-3",
             latitude: 35.6654,
             longitude: 139.7310,
+            streetviewEmbed: nil,
             createdAt: Date(),
             updatedAt: Date()
         )

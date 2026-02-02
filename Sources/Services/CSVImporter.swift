@@ -60,6 +60,7 @@ struct CSVImporter {
         let architectIndex = headers.firstIndex(of: "architect")
         let constructorIndex = headers.firstIndex(of: "constructor")
         let imageUrlsIndex = headers.firstIndex(of: "image_urls")
+        let streetviewEmbedIndex = headers.firstIndex(of: "streetview_embed")
 
         var buildings: [Building] = []
 
@@ -97,6 +98,8 @@ struct CSVImporter {
                     .trimmingCharacters(in: .whitespaces).nilIfEmpty,
                 imageUrls: imageUrlsIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) } ?? [],
+                streetviewEmbed: streetviewEmbedIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
+                    .trimmingCharacters(in: .whitespaces).nilIfEmpty,
                 createdAt: Date(),
                 updatedAt: Date()
             )
@@ -142,6 +145,7 @@ struct CSVImporter {
         let addressIndex = headers.firstIndex(of: "address")
         let latitudeIndex = headers.firstIndex(of: "latitude")
         let longitudeIndex = headers.firstIndex(of: "longitude")
+        let streetviewEmbedIndex = headers.firstIndex(of: "streetview_embed")
 
         var companies: [Company] = []
 
@@ -175,6 +179,8 @@ struct CSVImporter {
                     .trimmingCharacters(in: .whitespaces) ?? "",
                 latitude: latitudeIndex.flatMap { row.indices.contains($0) ? Double(row[$0].trimmingCharacters(in: .whitespaces)) : nil } ?? 0,
                 longitude: longitudeIndex.flatMap { row.indices.contains($0) ? Double(row[$0].trimmingCharacters(in: .whitespaces)) : nil } ?? 0,
+                streetviewEmbed: streetviewEmbedIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
+                    .trimmingCharacters(in: .whitespaces).nilIfEmpty,
                 createdAt: Date(),
                 updatedAt: Date()
             )

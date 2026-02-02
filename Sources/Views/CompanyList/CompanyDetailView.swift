@@ -29,11 +29,15 @@ struct CompanyDetailView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 // ストリートビュー
-                SectionView(title: "ストリートビュー") {
-                    StreetViewButton(
-                        latitude: company.latitude,
-                        longitude: company.longitude
-                    )
+                if let embedHTML = company.streetviewEmbed {
+                    EmbeddedStreetViewSection(embedHTML: embedHTML)
+                } else {
+                    SectionView(title: "ストリートビュー") {
+                        StreetViewButton(
+                            latitude: company.latitude,
+                            longitude: company.longitude
+                        )
+                    }
                 }
 
                 // 基本情報セクション
