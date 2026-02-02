@@ -22,30 +22,20 @@ final class FavoriteRepository {
     }
 
     /// ビルをお気に入りに追加/解除
-    func toggleBuildingFavorite(_ buildingId: String) -> Bool {
+    func toggleBuildingFavorite(_ buildingId: String) {
         if isBuildingFavorite(buildingId) {
             appState.favoriteBuildingIds.remove(buildingId)
-            return true
         } else {
-            guard appState.canAddFavorite else {
-                return false
-            }
             appState.favoriteBuildingIds.insert(buildingId)
-            return true
         }
     }
 
     /// 企業をお気に入りに追加/解除
-    func toggleCompanyFavorite(_ companyId: String) -> Bool {
+    func toggleCompanyFavorite(_ companyId: String) {
         if isCompanyFavorite(companyId) {
             appState.favoriteCompanyIds.remove(companyId)
-            return true
         } else {
-            guard appState.canAddFavorite else {
-                return false
-            }
             appState.favoriteCompanyIds.insert(companyId)
-            return true
         }
     }
 

@@ -37,7 +37,7 @@ final class CompanyDetailViewModel {
     }
 
     /// お気に入りをトグル
-    func toggleFavorite() -> Bool {
+    func toggleFavorite() {
         favoriteRepository.toggleCompanyFavorite(company.companyId)
     }
 }

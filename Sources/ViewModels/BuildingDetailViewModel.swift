@@ -37,7 +37,7 @@ final class BuildingDetailViewModel {
     }
 
     /// お気に入りをトグル
-    func toggleFavorite() -> Bool {
+    func toggleFavorite() {
         favoriteRepository.toggleBuildingFavorite(building.buildingId)
     }
 }
