@@ -53,13 +53,20 @@ struct BuildingDetailView: View {
                 }
 
                 // 設計・施工セクション
-                if building.architect != nil || building.constructor != nil {
+                if building.architect != nil || building.constructor != nil ||
+                   building.constructionStart != nil || building.completion != nil {
                     SectionView(title: "設計・施工") {
                         if let architect = building.architect {
                             InfoRow(label: "設計", value: architect)
                         }
                         if let constructor = building.constructor {
                             InfoRow(label: "施工", value: constructor)
+                        }
+                        if let constructionStart = building.constructionStartDescription {
+                            InfoRow(label: "着工", value: constructionStart)
+                        }
+                        if let completion = building.completionDescription {
+                            InfoRow(label: "竣工", value: completion)
                         }
                     }
                 }

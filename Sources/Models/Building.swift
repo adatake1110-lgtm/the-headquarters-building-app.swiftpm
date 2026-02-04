@@ -16,6 +16,8 @@ struct Building: Identifiable, Codable, Hashable {
     let floorsBelow: Int?
     let architect: String?
     let constructor: String?
+    let constructionStart: String?  // 着工年月（yyyymm形式）
+    let completion: String?         // 竣工年月（yyyymm形式）
     let imageUrls: [String]
     let streetviewEmbed: String?
     let createdAt: Date
@@ -33,6 +35,8 @@ struct Building: Identifiable, Codable, Hashable {
         case floorsBelow = "floors_below"
         case architect
         case constructor
+        case constructionStart = "construction_start"
+        case completion
         case imageUrls = "image_urls"
         case streetviewEmbed = "streetview_embed"
         case createdAt = "created_at"
@@ -56,6 +60,28 @@ struct Building: Identifiable, Codable, Hashable {
         guard let height = height else { return nil }
         return String(format: "%.1fm", height)
     }
+
+    /// 着工年月の表示用フォーマット（例：2020年4月）
+    var constructionStartDescription: String? {
+        guard let yyyymm = constructionStart else { return nil }
+        return Self.formatYearMonth(yyyymm)
+    }
+
+    /// 竣工年月の表示用フォーマット（例：2023年11月）
+    var completionDescription: String? {
+        guard let yyyymm = completion else { return nil }
+        return Self.formatYearMonth(yyyymm)
+    }
+
+    /// yyyymm形式を「yyyy年m月」形式に変換
+    private static func formatYearMonth(_ yyyymm: String) -> String? {
+        guard yyyymm.count == 6,
+              let year = Int(yyyymm.prefix(4)),
+              let month = Int(yyyymm.suffix(2)) else {
+            return nil
+        }
+        return "\(year)年\(month)月"
+    }
 }
 
 // MARK: - Mock Data
@@ -73,6 +99,8 @@ extension Building {
             floorsBelow: 6,
             architect: "コーン・ペダーセン・フォックス",
             constructor: "大林組",
+            constructionStart: "200004",
+            completion: "200304",
             imageUrls: [],
             streetviewEmbed: nil,
             createdAt: Date(),
@@ -90,6 +118,8 @@ extension Building {
             floorsBelow: 7,
             architect: "日建設計・隈研吾建築都市設計事務所・SANAA",
             constructor: "東急建設・大成建設JV",
+            constructionStart: "201408",
+            completion: "201911",
             imageUrls: [],
             streetviewEmbed: nil,
             createdAt: Date(),
@@ -107,6 +137,8 @@ extension Building {
             floorsBelow: 5,
             architect: "スキッドモア・オーウィングズ・アンド・メリル",
             constructor: "竹中工務店",
+            constructionStart: "200405",
+            completion: "200701",
             imageUrls: [],
             streetviewEmbed: nil,
             createdAt: Date(),

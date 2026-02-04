@@ -148,6 +148,8 @@ Sources/Resources/companies.csv  - 企業データ
 | floors_below | | 地下階数 | `6` |
 | architect | | 設計者 | `コーン・ペダーセン・フォックス` |
 | constructor | | 施工者 | `大林組` |
+| construction_start | | 着工年月（yyyymm形式） | `200004` |
+| completion | | 竣工年月（yyyymm形式） | `200304` |
 | image_urls | | 画像URL（複数は`\|`で区切り） | `url1\|url2\|url3` |
 | streetview_embed | | ストリートビュー埋め込みHTML | `<iframe src="..."></iframe>` |
 
@@ -158,15 +160,15 @@ Sources/Resources/companies.csv  - 企業データ
 #### サンプル（latitude/longitude使用）
 
 ```csv
-building_id,name,postal_code,address,latitude,longitude,height,floors_above,floors_below,architect,constructor,image_urls,streetview_embed
-bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,35.6604,139.7292,238,54,6,コーン・ペダーセン・フォックス,大林組,,"<iframe src=""...""></iframe>"
+building_id,name,postal_code,address,latitude,longitude,height,floors_above,floors_below,architect,constructor,construction_start,completion,image_urls,streetview_embed
+bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,35.6604,139.7292,238,54,6,コーン・ペダーセン・フォックス,大林組,200004,200304,,"<iframe src=""...""></iframe>"
 ```
 
 #### サンプル（map_embed使用 - 座標自動抽出）
 
 ```csv
-building_id,name,postal_code,address,map_embed,height,floors_above,floors_below,architect,constructor,image_urls,streetview_embed
-bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,"<iframe src=""https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2548!2d139.72707459986293!3d35.66069718060055!2m3...""></iframe>",238,54,6,コーン・ペダーセン・フォックス,大林組,,
+building_id,name,postal_code,address,map_embed,height,floors_above,floors_below,architect,constructor,construction_start,completion,image_urls,streetview_embed
+bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,"<iframe src=""https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2548!2d139.72707459986293!3d35.66069718060055!2m3...""></iframe>",238,54,6,コーン・ペダーセン・フォックス,大林組,200004,200304,,
 ```
 
 ---

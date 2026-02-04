@@ -62,6 +62,8 @@ struct CSVImporter {
         let floorsBelowIndex = headers.firstIndex(of: "floors_below")
         let architectIndex = headers.firstIndex(of: "architect")
         let constructorIndex = headers.firstIndex(of: "constructor")
+        let constructionStartIndex = headers.firstIndex(of: "construction_start")
+        let completionIndex = headers.firstIndex(of: "completion")
         let imageUrlsIndex = headers.firstIndex(of: "image_urls")
         let streetviewEmbedIndex = headers.firstIndex(of: "streetview_embed")
 
@@ -121,6 +123,10 @@ struct CSVImporter {
                 architect: architectIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .trimmingCharacters(in: .whitespaces).nilIfEmpty,
                 constructor: constructorIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
+                    .trimmingCharacters(in: .whitespaces).nilIfEmpty,
+                constructionStart: constructionStartIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
+                    .trimmingCharacters(in: .whitespaces).nilIfEmpty,
+                completion: completionIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .trimmingCharacters(in: .whitespaces).nilIfEmpty,
                 imageUrls: imageUrlsIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) } ?? [],

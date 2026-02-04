@@ -46,6 +46,12 @@ final class AdminBuildingEditViewModel {
     /// 施工
     var constructor = ""
 
+    /// 着工年月（yyyymm形式）
+    var constructionStart = ""
+
+    /// 竣工年月（yyyymm形式）
+    var completion = ""
+
     /// 説明文
     var description = ""
 
@@ -100,6 +106,8 @@ final class AdminBuildingEditViewModel {
         floorsBelowString = building.floorsBelow.map { String($0) } ?? ""
         architect = building.architect ?? ""
         constructor = building.constructor ?? ""
+        constructionStart = building.constructionStart ?? ""
+        completion = building.completion ?? ""
         existingImageUrls = building.imageUrls
     }
 
@@ -208,6 +216,8 @@ final class AdminBuildingEditViewModel {
                 floorsBelow: Int(floorsBelowString),
                 architect: architect.isEmpty ? nil : architect,
                 constructor: constructor.isEmpty ? nil : constructor,
+                constructionStart: constructionStart.isEmpty ? nil : constructionStart,
+                completion: completion.isEmpty ? nil : completion,
                 imageUrls: allImageUrls,
                 streetviewEmbed: originalBuilding?.streetviewEmbed,
                 createdAt: originalBuilding?.createdAt ?? Date(),
