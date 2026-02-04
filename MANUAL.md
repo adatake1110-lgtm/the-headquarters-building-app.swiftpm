@@ -148,13 +148,14 @@ Sources/Resources/companies.csv  - 企業データ
 | architect | | 設計者 | `コーン・ペダーセン・フォックス` |
 | constructor | | 施工者 | `大林組` |
 | image_urls | | 画像URL（複数は`\|`で区切り） | `url1\|url2\|url3` |
+| streetview_embed | | ストリートビュー埋め込みHTML | `<iframe src="..."></iframe>` |
 
 #### サンプル
 
 ```csv
-building_id,name,postal_code,address,latitude,longitude,height,floors_above,floors_below,architect,constructor,image_urls
-bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,35.6604,139.7292,238,54,6,コーン・ペダーセン・フォックス,大林組,
-bld_002,渋谷スクランブルスクエア,150-6139,東京都渋谷区渋谷2-24-12,35.6580,139.7016,229.7,47,7,日建設計,東急建設,
+building_id,name,postal_code,address,latitude,longitude,height,floors_above,floors_below,architect,constructor,image_urls,streetview_embed
+bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,35.6604,139.7292,238,54,6,コーン・ペダーセン・フォックス,大林組,,"<iframe src=""https://www.google.com/maps/embed?pb=!4v..."" width=""600"" height=""450"" allowfullscreen="""" loading=""lazy""></iframe>"
+bld_002,渋谷スクランブルスクエア,150-6139,東京都渋谷区渋谷2-24-12,35.6580,139.7016,229.7,47,7,日建設計,東急建設,,
 ```
 
 ---
@@ -167,35 +168,96 @@ bld_002,渋谷スクランブルスクエア,150-6139,東京都渋谷区渋谷2-
 |---------|:----:|------|-----|
 | company_id | | 企業ID（空欄可、自動生成） | `cmp_001` |
 | name | ✅ | 企業名 | `Google合同会社` |
-| industry | ✅ | 業界 | `IT・通信` |
+| industry | ✅ | 業界 | `インターネット` |
 | description | | 企業概要 | `世界最大の検索エンジン...` |
 | building_id | ✅ | 本社ビルID（buildings.csvのIDと一致させる） | `bld_001` |
 | postal_code | | 郵便番号 | `106-6108` |
 | address | | 住所 | `東京都港区六本木6-10-1` |
 | latitude | | 緯度（空欄の場合は0） | `35.6604` |
 | longitude | | 経度（空欄の場合は0） | `139.7292` |
+| streetview_embed | | ストリートビュー埋め込みHTML | `<iframe src="..."></iframe>` |
 
 #### 業界の選択肢
 
-- IT・通信
-- 金融・保険
-- 不動産・建設
-- 製造業
-- 小売・流通
-- サービス
-- メディア・広告
-- コンサルティング
-- エネルギー
-- 医療・ヘルスケア
+**メーカー系**
+- 自動車・輸送用機器
+- 鉄鋼・金属・鉱業
+- 機械・プラント
+- 電子・電気機器
+- 精密・医療機器
+- 食品・農林・水産
+- 建設・住宅・インテリア
+- 繊維・化学・薬品・化粧品
+- 印刷・事務機器関連
+- スポーツ・玩具
+- その他メーカー
+
+**商社**
+- 総合商社
+- 専門商社
+
+**金融**
+- 都市銀行
+- 投資銀行
+- 信託銀行
+- 証券
+- アセットマネジメント
+- 政府系・系統金融機関
+- 生保・損保
+- クレジット
+- リース
+- 消費者金融
+
+**不動産・インフラ**
+- 不動産
+- 鉄道・航空
+- 陸運・海運・物流
+- 電力・ガス・エネルギー
+
+**サービス**
+- 医療・福祉
 - 教育
-- その他
+- 人材サービス
+- コンサルティング・調査
+- FAS
+- ベンチャーキャピタル
+- フードサービス
+- ホテル・旅行
+- アミューズメント・レジャー
+- その他サービス
+
+**IT・通信**
+- SIer
+- ソフトウェア
+- ゲーム
+- インターネット
+- 通信
+
+**メディア**
+- 放送
+- 新聞
+- 出版
+- 広告
+
+**官公庁・公共**
+- 官公庁
+- 公社・団体
+
+**小売**
+- 百貨店・スーパー
+- コンビニ
+- 専門店
+
+**士業**
+- 法律事務所
+- 会計事務所
 
 #### サンプル
 
 ```csv
-company_id,name,industry,description,building_id,postal_code,address,latitude,longitude
-cmp_001,Google合同会社,IT・通信,世界最大の検索エンジンを運営,bld_001,106-6108,東京都港区六本木6-10-1,35.6604,139.7292
-cmp_002,楽天グループ株式会社,IT・通信,ECサイト楽天市場を運営,bld_003,107-0052,東京都港区赤坂9-7-1,35.6657,139.7310
+company_id,name,industry,description,building_id,postal_code,address,latitude,longitude,streetview_embed
+cmp_001,Google合同会社,インターネット,世界最大の検索エンジンを運営,bld_001,106-6108,東京都港区六本木6-10-1,35.6604,139.7292,"<iframe src=""https://www.google.com/maps/embed?pb=!4v..."" width=""600"" height=""450"" allowfullscreen="""" loading=""lazy""></iframe>"
+cmp_002,楽天グループ株式会社,インターネット,ECサイト楽天市場を運営,bld_003,107-0052,東京都港区赤坂9-7-1,35.6657,139.7310,
 ```
 
 ---
@@ -258,7 +320,37 @@ cmp_002,楽天グループ株式会社,IT・通信,ECサイト楽天市場を運
 
 ---
 
-## 3. 緯度・経度の調べ方
+## 3. ストリートビュー埋め込みHTMLの取得方法
+
+### Google Mapsでストリートビュー埋め込みコードを取得
+
+1. [Google Maps](https://www.google.co.jp/maps) を開く
+2. 目的の場所を検索し、ストリートビューを表示
+3. 左上のメニュー（≡）をクリック
+4. **「地図を共有または埋め込む」** をクリック
+5. **「地図を埋め込む」** タブを選択
+6. iframeコードをコピー
+
+### CSVでの記載方法
+
+CSVファイル内でダブルクォートを使用するため、iframe内のダブルクォートは `""` でエスケープします。
+
+**元のコード:**
+```html
+<iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" allowfullscreen="" loading="lazy"></iframe>
+```
+
+**CSV内での記載:**
+```csv
+"<iframe src=""https://www.google.com/maps/embed?pb=..."" width=""600"" height=""450"" allowfullscreen="""" loading=""lazy""></iframe>"
+```
+
+> 💡 ストリートビュー埋め込みHTMLが設定されていない場合は、
+> Apple Look Aroundボタンが表示されます（iOS標準機能）。
+
+---
+
+## 4. 緯度・経度の調べ方
 
 ### Google Mapsで調べる
 
