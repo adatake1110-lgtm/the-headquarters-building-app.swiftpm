@@ -140,8 +140,9 @@ Sources/Resources/companies.csv  - 企業データ
 | name | ✅ | ビル名 | `六本木ヒルズ森タワー` |
 | postal_code | | 郵便番号（ハイフンあり） | `106-6108` |
 | address | ✅ | 住所 | `東京都港区六本木6-10-1` |
-| latitude | ✅ | 緯度 | `35.6604` |
-| longitude | ✅ | 経度 | `139.7292` |
+| latitude | ※ | 緯度 | `35.6604` |
+| longitude | ※ | 経度 | `139.7292` |
+| map_embed | ※ | 地図埋め込みHTML（座標自動抽出） | `<iframe src="..."></iframe>` |
 | height | | 高さ（m） | `238` |
 | floors_above | | 地上階数 | `54` |
 | floors_below | | 地下階数 | `6` |
@@ -150,12 +151,22 @@ Sources/Resources/companies.csv  - 企業データ
 | image_urls | | 画像URL（複数は`\|`で区切り） | `url1\|url2\|url3` |
 | streetview_embed | | ストリートビュー埋め込みHTML | `<iframe src="..."></iframe>` |
 
-#### サンプル
+> ※ **座標の指定方法**：以下のいずれかを指定してください
+> - `latitude` + `longitude` を直接入力
+> - `map_embed` にGoogle Maps埋め込みHTMLを入力（座標が自動抽出されます）
+
+#### サンプル（latitude/longitude使用）
 
 ```csv
 building_id,name,postal_code,address,latitude,longitude,height,floors_above,floors_below,architect,constructor,image_urls,streetview_embed
-bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,35.6604,139.7292,238,54,6,コーン・ペダーセン・フォックス,大林組,,"<iframe src=""https://www.google.com/maps/embed?pb=!4v..."" width=""600"" height=""450"" allowfullscreen="""" loading=""lazy""></iframe>"
-bld_002,渋谷スクランブルスクエア,150-6139,東京都渋谷区渋谷2-24-12,35.6580,139.7016,229.7,47,7,日建設計,東急建設,,
+bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,35.6604,139.7292,238,54,6,コーン・ペダーセン・フォックス,大林組,,"<iframe src=""...""></iframe>"
+```
+
+#### サンプル（map_embed使用 - 座標自動抽出）
+
+```csv
+building_id,name,postal_code,address,map_embed,height,floors_above,floors_below,architect,constructor,image_urls,streetview_embed
+bld_001,六本木ヒルズ森タワー,106-6108,東京都港区六本木6-10-1,"<iframe src=""https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2548!2d139.72707459986293!3d35.66069718060055!2m3...""></iframe>",238,54,6,コーン・ペダーセン・フォックス,大林組,,
 ```
 
 ---
@@ -175,7 +186,10 @@ bld_002,渋谷スクランブルスクエア,150-6139,東京都渋谷区渋谷2-
 | address | | 住所 | `東京都港区六本木6-10-1` |
 | latitude | | 緯度（空欄の場合は0） | `35.6604` |
 | longitude | | 経度（空欄の場合は0） | `139.7292` |
+| map_embed | | 地図埋め込みHTML（座標自動抽出） | `<iframe src="..."></iframe>` |
 | streetview_embed | | ストリートビュー埋め込みHTML | `<iframe src="..."></iframe>` |
+
+> 💡 **座標の指定方法**：`latitude`/`longitude`が空の場合、`map_embed`から座標を自動抽出します
 
 #### 業界の選択肢
 
@@ -320,9 +334,33 @@ cmp_002,楽天グループ株式会社,インターネット,ECサイト楽天�
 
 ---
 
-## 3. ストリートビュー埋め込みHTMLの取得方法
+## 3. Google Maps埋め込みHTMLの取得方法
 
-### Google Mapsでストリートビュー埋め込みコードを取得
+### 3.1 地図埋め込みHTML（map_embed）の取得
+
+`map_embed`を使用すると、緯度・経度を手動入力せずに、Google Maps埋め込みコードから座標を自動抽出できます。
+
+#### 取得手順
+
+1. [Google Maps](https://www.google.co.jp/maps) を開く
+2. 目的のビル・施設を検索
+3. 左上のメニュー（≡）をクリック
+4. **「地図を共有または埋め込む」** をクリック
+5. **「地図を埋め込む」** タブを選択
+6. iframeコードをコピー
+
+#### 座標自動抽出の仕組み
+
+埋め込みURLに含まれる座標情報が自動的に抽出されます：
+
+```
+https://www.google.com/maps/embed?pb=...!2d139.72707459986293!3d35.66069718060055...
+                                      ↑ 経度              ↑ 緯度
+```
+
+---
+
+### 3.2 ストリートビュー埋め込みHTML（streetview_embed）の取得
 
 1. [Google Maps](https://www.google.co.jp/maps) を開く
 2. 目的の場所を検索し、ストリートビューを表示
@@ -331,7 +369,12 @@ cmp_002,楽天グループ株式会社,インターネット,ECサイト楽天�
 5. **「地図を埋め込む」** タブを選択
 6. iframeコードをコピー
 
-### CSVでの記載方法
+> 💡 ストリートビュー埋め込みHTMLが設定されていない場合は、
+> Apple Look Aroundボタンが表示されます（iOS標準機能）。
+
+---
+
+### 3.3 CSVでの記載方法
 
 CSVファイル内でダブルクォートを使用するため、iframe内のダブルクォートは `""` でエスケープします。
 
@@ -344,9 +387,6 @@ CSVファイル内でダブルクォートを使用するため、iframe内の�
 ```csv
 "<iframe src=""https://www.google.com/maps/embed?pb=..."" width=""600"" height=""450"" allowfullscreen="""" loading=""lazy""></iframe>"
 ```
-
-> 💡 ストリートビュー埋め込みHTMLが設定されていない場合は、
-> Apple Look Aroundボタンが表示されます（iOS標準機能）。
 
 ---
 

@@ -45,11 +45,14 @@ struct CSVImporter {
 
         // 必須カラムのインデックスを取得
         guard let nameIndex = headers.firstIndex(of: "name"),
-              let addressIndex = headers.firstIndex(of: "address"),
-              let latitudeIndex = headers.firstIndex(of: "latitude"),
-              let longitudeIndex = headers.firstIndex(of: "longitude") else {
-            throw CSVImportError.invalidFormat("必須カラム（name, address, latitude, longitude）がありません")
+              let addressIndex = headers.firstIndex(of: "address") else {
+            throw CSVImportError.invalidFormat("必須カラム（name, address）がありません")
         }
+
+        // 座標カラム（latitude/longitudeまたはmap_embedが必要）
+        let latitudeIndex = headers.firstIndex(of: "latitude")
+        let longitudeIndex = headers.firstIndex(of: "longitude")
+        let mapEmbedIndex = headers.firstIndex(of: "map_embed")
 
         // オプションカラムのインデックス
         let idIndex = headers.firstIndex(of: "building_id")
@@ -68,16 +71,39 @@ struct CSVImporter {
         for (index, row) in rows.dropFirst().enumerated() {
             let lineNumber = index + 2 // ヘッダー行 + 0-indexed
 
-            guard row.count > max(nameIndex, addressIndex, latitudeIndex, longitudeIndex) else {
+            guard row.count > max(nameIndex, addressIndex) else {
                 continue // 空行をスキップ
             }
 
             let name = row[nameIndex].trimmingCharacters(in: .whitespaces)
             guard !name.isEmpty else { continue }
 
-            guard let latitude = Double(row[latitudeIndex].trimmingCharacters(in: .whitespaces)),
-                  let longitude = Double(row[longitudeIndex].trimmingCharacters(in: .whitespaces)) else {
-                throw CSVImportError.parsingError("緯度・経度が不正です", lineNumber)
+            // 座標を取得（latitude/longitude または map_embed から抽出）
+            var latitude: Double?
+            var longitude: Double?
+
+            // 1. まずlatitude/longitudeカラムから取得を試みる
+            if let latIdx = latitudeIndex, let lngIdx = longitudeIndex,
+               row.indices.contains(latIdx), row.indices.contains(lngIdx) {
+                latitude = Double(row[latIdx].trimmingCharacters(in: .whitespaces))
+                longitude = Double(row[lngIdx].trimmingCharacters(in: .whitespaces))
+            }
+
+            // 2. 座標が取得できない場合、map_embedから抽出
+            if latitude == nil || longitude == nil,
+               let embedIdx = mapEmbedIndex,
+               row.indices.contains(embedIdx) {
+                let embedHTML = row[embedIdx].trimmingCharacters(in: .whitespaces)
+                if !embedHTML.isEmpty,
+                   let coords = GoogleMapsEmbedParser.extractCoordinates(from: embedHTML) {
+                    latitude = coords.latitude
+                    longitude = coords.longitude
+                }
+            }
+
+            // 座標が取得できない場合はエラー
+            guard let finalLatitude = latitude, let finalLongitude = longitude else {
+                throw CSVImportError.parsingError("緯度・経度が不正です（latitude/longitudeまたはmap_embedを指定してください）", lineNumber)
             }
 
             let building = Building(
@@ -87,8 +113,8 @@ struct CSVImporter {
                 postalCode: postalCodeIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .trimmingCharacters(in: .whitespaces) ?? "",
                 address: row[addressIndex].trimmingCharacters(in: .whitespaces),
-                latitude: latitude,
-                longitude: longitude,
+                latitude: finalLatitude,
+                longitude: finalLongitude,
                 height: heightIndex.flatMap { row.indices.contains($0) ? Double(row[$0].trimmingCharacters(in: .whitespaces)) : nil },
                 floorsAbove: floorsAboveIndex.flatMap { row.indices.contains($0) ? Int(row[$0].trimmingCharacters(in: .whitespaces)) : nil },
                 floorsBelow: floorsBelowIndex.flatMap { row.indices.contains($0) ? Int(row[$0].trimmingCharacters(in: .whitespaces)) : nil },
@@ -145,6 +171,7 @@ struct CSVImporter {
         let addressIndex = headers.firstIndex(of: "address")
         let latitudeIndex = headers.firstIndex(of: "latitude")
         let longitudeIndex = headers.firstIndex(of: "longitude")
+        let mapEmbedIndex = headers.firstIndex(of: "map_embed")
         let streetviewEmbedIndex = headers.firstIndex(of: "streetview_embed")
 
         var companies: [Company] = []
@@ -165,6 +192,29 @@ struct CSVImporter {
                 throw CSVImportError.parsingError("building_idが空です", lineNumber)
             }
 
+            // 座標を取得（latitude/longitude または map_embed から抽出）
+            var companyLatitude: Double = 0
+            var companyLongitude: Double = 0
+
+            // 1. まずlatitude/longitudeカラムから取得を試みる
+            if let latIdx = latitudeIndex, let lngIdx = longitudeIndex,
+               row.indices.contains(latIdx), row.indices.contains(lngIdx) {
+                companyLatitude = Double(row[latIdx].trimmingCharacters(in: .whitespaces)) ?? 0
+                companyLongitude = Double(row[lngIdx].trimmingCharacters(in: .whitespaces)) ?? 0
+            }
+
+            // 2. 座標が0の場合、map_embedから抽出を試みる
+            if companyLatitude == 0 && companyLongitude == 0,
+               let embedIdx = mapEmbedIndex,
+               row.indices.contains(embedIdx) {
+                let embedHTML = row[embedIdx].trimmingCharacters(in: .whitespaces)
+                if !embedHTML.isEmpty,
+                   let coords = GoogleMapsEmbedParser.extractCoordinates(from: embedHTML) {
+                    companyLatitude = coords.latitude
+                    companyLongitude = coords.longitude
+                }
+            }
+
             let company = Company(
                 companyId: idIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .trimmingCharacters(in: .whitespaces).nilIfEmpty ?? UUID().uuidString,
@@ -177,8 +227,8 @@ struct CSVImporter {
                     .trimmingCharacters(in: .whitespaces) ?? "",
                 address: addressIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .trimmingCharacters(in: .whitespaces) ?? "",
-                latitude: latitudeIndex.flatMap { row.indices.contains($0) ? Double(row[$0].trimmingCharacters(in: .whitespaces)) : nil } ?? 0,
-                longitude: longitudeIndex.flatMap { row.indices.contains($0) ? Double(row[$0].trimmingCharacters(in: .whitespaces)) : nil } ?? 0,
+                latitude: companyLatitude,
+                longitude: companyLongitude,
                 streetviewEmbed: streetviewEmbedIndex.flatMap { row.indices.contains($0) ? row[$0] : nil }?
                     .trimmingCharacters(in: .whitespaces).nilIfEmpty,
                 createdAt: Date(),
