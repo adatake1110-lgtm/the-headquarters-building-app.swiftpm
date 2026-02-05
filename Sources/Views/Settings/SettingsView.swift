@@ -16,48 +16,6 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-            // 有料版セクション
-            Section {
-                if viewModel.isPremium {
-                    HStack {
-                        Image(systemName: "checkmark.seal.fill")
-                            .foregroundStyle(.green)
-                        Text("有料版（購入済み）")
-                        Spacer()
-                    }
-                } else {
-                    Button {
-                        Task {
-                            await viewModel.purchasePremium()
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "star.fill")
-                                .foregroundStyle(.yellow)
-                            Text("有料版を購入（¥\(Constants.premiumPrice)）")
-                            Spacer()
-                            if viewModel.isPurchasing {
-                                ProgressView()
-                            }
-                        }
-                    }
-                    .disabled(viewModel.isPurchasing)
-
-                    Button("購入を復元") {
-                        Task {
-                            await viewModel.restorePurchases()
-                        }
-                    }
-                    .disabled(viewModel.isPurchasing)
-                }
-            } header: {
-                Text("有料版")
-            } footer: {
-                if !viewModel.isPremium {
-                    Text("有料版では広告非表示、お気に入り無制限になります。")
-                }
-            }
-
             // お気に入りセクション
             Section("お気に入り") {
                 NavigationLink {
@@ -66,13 +24,8 @@ struct SettingsView: View {
                     HStack {
                         Text("お気に入り一覧")
                         Spacer()
-                        if !viewModel.isPremium {
-                            Text("\(viewModel.totalFavoriteCount)/\(viewModel.favoriteLimit)")
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Text("\(viewModel.totalFavoriteCount)")
-                                .foregroundStyle(.secondary)
-                        }
+                        Text("\(viewModel.totalFavoriteCount)")
+                            .foregroundStyle(.secondary)
                     }
                 }
             }

@@ -9,12 +9,6 @@ struct BuildingDetailView: View {
     /// ViewModel
     @State private var viewModel: BuildingDetailViewModel
 
-    /// アプリ状態
-    @Environment(AppState.self) private var appState
-
-    /// お気に入り追加失敗アラート
-    @State private var showFavoriteLimitAlert = false
-
     init(building: Building) {
         self.building = building
         _viewModel = State(initialValue: BuildingDetailViewModel(building: building))
@@ -35,11 +29,15 @@ struct BuildingDetailView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 // ストリートビュー
-                SectionView(title: "ストリートビュー") {
-                    StreetViewButton(
-                        latitude: building.latitude,
-                        longitude: building.longitude
-                    )
+                if let embedHTML = building.streetviewEmbed {
+                    EmbeddedStreetViewSection(embedHTML: embedHTML)
+                } else {
+                    SectionView(title: "ストリートビュー") {
+                        StreetViewButton(
+                            latitude: building.latitude,
+                            longitude: building.longitude
+                        )
+                    }
                 }
 
                 // 基本情報セクション
@@ -55,13 +53,20 @@ struct BuildingDetailView: View {
                 }
 
                 // 設計・施工セクション
-                if building.architect != nil || building.constructor != nil {
+                if building.architect != nil || building.constructor != nil ||
+                   building.constructionStart != nil || building.completion != nil {
                     SectionView(title: "設計・施工") {
                         if let architect = building.architect {
                             InfoRow(label: "設計", value: architect)
                         }
                         if let constructor = building.constructor {
                             InfoRow(label: "施工", value: constructor)
+                        }
+                        if let constructionStart = building.constructionStartDescription {
+                            InfoRow(label: "着工", value: constructionStart)
+                        }
+                        if let completion = building.completionDescription {
+                            InfoRow(label: "竣工", value: completion)
                         }
                     }
                 }
@@ -125,22 +130,13 @@ struct BuildingDetailView: View {
                 FavoriteButton(
                     isFavorite: viewModel.isFavorite,
                     action: {
-                        if !viewModel.toggleFavorite() {
-                            showFavoriteLimitAlert = true
-                        }
+                        viewModel.toggleFavorite()
                     }
                 )
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if !appState.isPremium {
-                AdBannerView()
-            }
-        }
-        .alert("お気に入り上限", isPresented: $showFavoriteLimitAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("無料版ではお気に入りは\(Constants.freeVersionFavoriteLimit)件までです。有料版にアップグレードすると無制限になります。")
+            AdBannerView()
         }
     }
 }

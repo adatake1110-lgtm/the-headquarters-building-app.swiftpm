@@ -9,12 +9,6 @@ struct CompanyDetailView: View {
     /// ViewModel
     @State private var viewModel: CompanyDetailViewModel
 
-    /// アプリ状態
-    @Environment(AppState.self) private var appState
-
-    /// お気に入り追加失敗アラート
-    @State private var showFavoriteLimitAlert = false
-
     init(company: Company) {
         self.company = company
         _viewModel = State(initialValue: CompanyDetailViewModel(company: company))
@@ -35,11 +29,15 @@ struct CompanyDetailView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 // ストリートビュー
-                SectionView(title: "ストリートビュー") {
-                    StreetViewButton(
-                        latitude: company.latitude,
-                        longitude: company.longitude
-                    )
+                if let embedHTML = company.streetviewEmbed {
+                    EmbeddedStreetViewSection(embedHTML: embedHTML)
+                } else {
+                    SectionView(title: "ストリートビュー") {
+                        StreetViewButton(
+                            latitude: company.latitude,
+                            longitude: company.longitude
+                        )
+                    }
                 }
 
                 // 基本情報セクション
@@ -93,22 +91,13 @@ struct CompanyDetailView: View {
                 FavoriteButton(
                     isFavorite: viewModel.isFavorite,
                     action: {
-                        if !viewModel.toggleFavorite() {
-                            showFavoriteLimitAlert = true
-                        }
+                        viewModel.toggleFavorite()
                     }
                 )
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if !appState.isPremium {
-                AdBannerView()
-            }
-        }
-        .alert("お気に入り上限", isPresented: $showFavoriteLimitAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("無料版ではお気に入りは\(Constants.freeVersionFavoriteLimit)件までです。有料版にアップグレードすると無制限になります。")
+            AdBannerView()
         }
     }
 }
@@ -117,5 +106,4 @@ struct CompanyDetailView: View {
     NavigationStack {
         CompanyDetailView(company: Company.mockData[0])
     }
-    .environment(AppState.shared)
 }

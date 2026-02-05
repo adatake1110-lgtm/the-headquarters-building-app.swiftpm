@@ -65,18 +65,59 @@ final class AdminCompanyEditViewModel {
 
     /// 業界リスト
     let industryOptions = [
-        "IT・通信",
-        "金融・保険",
-        "不動産・建設",
-        "製造業",
-        "小売・流通",
-        "サービス",
-        "メディア・広告",
-        "コンサルティング",
-        "エネルギー",
-        "医療・ヘルスケア",
+        "自動車・輸送用機器",
+        "鉄鋼・金属・鉱業",
+        "機械・プラント",
+        "電子・電気機器",
+        "精密・医療機器",
+        "食品・農林・水産",
+        "建設・住宅・インテリア",
+        "繊維・化学・薬品・化粧品",
+        "印刷・事務機器関連",
+        "スポーツ・玩具",
+        "その他メーカー",
+        "総合商社",
+        "専門商社",
+        "都市銀行",
+        "投資銀行",
+        "信託銀行",
+        "証券",
+        "アセットマネジメント",
+        "政府系・系統金融機関",
+        "生保・損保",
+        "クレジット",
+        "リース",
+        "消費者金融",
+        "不動産",
+        "鉄道・航空",
+        "陸運・海運・物流",
+        "電力・ガス・エネルギー",
+        "医療・福祉",
         "教育",
-        "その他"
+        "人材サービス",
+        "コンサルティング・調査",
+        "FAS",
+        "ベンチャーキャピタル",
+        "フードサービス",
+        "ホテル・旅行",
+        "アミューズメント・レジャー",
+        "その他サービス",
+        "SIer",
+        "ソフトウェア",
+        "ゲーム",
+        "インターネット",
+        "通信",
+        "放送",
+        "新聞",
+        "出版",
+        "広告",
+        "官公庁",
+        "公社・団体",
+        "百貨店・スーパー",
+        "コンビニ",
+        "専門店",
+        "法律事務所",
+        "会計事務所"
     ]
 
     // MARK: - 初期化
@@ -170,7 +211,7 @@ final class AdminCompanyEditViewModel {
 
         do {
             // 企業データを作成
-            let company = Company(
+            _ = Company(
                 companyId: originalCompany?.companyId ?? UUID().uuidString,
                 name: name.trimmingCharacters(in: .whitespaces),
                 industry: industry,
@@ -180,6 +221,7 @@ final class AdminCompanyEditViewModel {
                 address: address.trimmingCharacters(in: .whitespaces),
                 latitude: Double(latitudeString) ?? 0,
                 longitude: Double(longitudeString) ?? 0,
+                streetviewEmbed: originalCompany?.streetviewEmbed,
                 createdAt: originalCompany?.createdAt ?? Date(),
                 updatedAt: Date()
             )

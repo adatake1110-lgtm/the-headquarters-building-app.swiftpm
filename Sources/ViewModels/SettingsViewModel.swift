@@ -7,24 +7,6 @@ final class SettingsViewModel {
     /// アプリ状態
     private let appState = AppState.shared
 
-    /// 購入マネージャー
-    private let purchaseManager = PurchaseManager.shared
-
-    /// 有料版かどうか
-    var isPremium: Bool {
-        appState.isPremium
-    }
-
-    /// 購入処理中かどうか
-    var isPurchasing: Bool {
-        purchaseManager.isPurchasing
-    }
-
-    /// エラーメッセージ
-    var errorMessage: String? {
-        purchaseManager.errorMessage
-    }
-
     /// カラースキーム設定
     var colorSchemeSelection: Int {
         get {
@@ -60,25 +42,10 @@ final class SettingsViewModel {
         appState.totalFavoriteCount
     }
 
-    /// お気に入り上限
-    var favoriteLimit: Int {
-        Constants.freeVersionFavoriteLimit
-    }
-
     /// アプリバージョン
     var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
         return "\(version) (\(build))"
-    }
-
-    /// 有料版を購入
-    func purchasePremium() async {
-        await purchaseManager.purchasePremium()
-    }
-
-    /// 購入を復元
-    func restorePurchases() async {
-        await purchaseManager.restorePurchases()
     }
 }

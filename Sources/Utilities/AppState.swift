@@ -8,16 +8,6 @@ final class AppState {
     /// シングルトンインスタンス
     static let shared = AppState()
 
-    /// 有料版かどうか
-    var isPremium: Bool {
-        get {
-            UserDefaults.standard.bool(forKey: "isPremium")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "isPremium")
-        }
-    }
-
     /// ダークモード設定
     var preferredColorScheme: ColorScheme? {
         get {
@@ -82,11 +72,6 @@ final class AppState {
     /// お気に入り総数
     var totalFavoriteCount: Int {
         favoriteBuildingIds.count + favoriteCompanyIds.count
-    }
-
-    /// お気に入り追加可能かどうか
-    var canAddFavorite: Bool {
-        isPremium || totalFavoriteCount < Constants.freeVersionFavoriteLimit
     }
 
     private init() {}

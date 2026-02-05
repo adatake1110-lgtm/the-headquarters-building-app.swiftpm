@@ -5,15 +5,6 @@ enum Constants {
     /// アプリ名
     static let appName = "本社ビルマップ"
 
-    /// 無料版のお気に入り登録上限
-    static let freeVersionFavoriteLimit = 10
-
-    /// 有料版の価格
-    static let premiumPrice = 500
-
-    /// 有料版のプロダクトID
-    static let premiumProductId = "com.example.hqbuildingmap.premium"
-
     /// デフォルトの地図中心座標（東京駅）
     static let defaultLatitude = 35.6812
     static let defaultLongitude = 139.7671
