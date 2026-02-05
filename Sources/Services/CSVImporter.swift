@@ -263,15 +263,33 @@ struct CSVImporter {
     }
 
     /// CSV文字列を行と列に分割
+    /// RFC 4180準拠: ダブルクォート内の""はリテラル"として扱う
     private static func parseCSVRows(_ csvString: String) -> [[String]] {
         var rows: [[String]] = []
         var currentRow: [String] = []
         var currentField = ""
         var insideQuotes = false
+        let chars = Array(csvString)
+        var i = 0
 
-        for char in csvString {
+        while i < chars.count {
+            let char = chars[i]
+
             if char == "\"" {
-                insideQuotes.toggle()
+                if insideQuotes {
+                    // 次の文字も"なら、エスケープされたリテラル"
+                    if i + 1 < chars.count && chars[i + 1] == "\"" {
+                        currentField.append("\"")
+                        i += 2
+                        continue
+                    } else {
+                        // クォート終了
+                        insideQuotes = false
+                    }
+                } else {
+                    // クォート開始
+                    insideQuotes = true
+                }
             } else if char == "," && !insideQuotes {
                 currentRow.append(currentField)
                 currentField = ""
@@ -287,6 +305,8 @@ struct CSVImporter {
             } else {
                 currentField.append(char)
             }
+
+            i += 1
         }
 
         // 最後のフィールドと行を追加
