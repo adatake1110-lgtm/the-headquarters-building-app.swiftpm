@@ -77,15 +77,36 @@ struct AdminCompanyEditView: View {
 
                 // 位置情報セクション
                 Section {
-                    TextField("緯度（必須）", text: $viewModel.latitudeString)
+                    TextField("緯度", text: $viewModel.latitudeString)
                         .keyboardType(.decimalPad)
 
-                    TextField("経度（必須）", text: $viewModel.longitudeString)
+                    TextField("経度", text: $viewModel.longitudeString)
                         .keyboardType(.decimalPad)
+
+                    TextField("地図埋め込みHTML", text: $viewModel.mapEmbed, axis: .vertical)
+                        .lineLimit(2...4)
+                        .font(.caption)
+
+                    if !viewModel.mapEmbed.trimmingCharacters(in: .whitespaces).isEmpty {
+                        Button("埋め込みHTMLから座標を抽出") {
+                            viewModel.extractCoordinatesFromMapEmbed()
+                        }
+                    }
                 } header: {
                     Text("位置情報")
                 } footer: {
-                    Text("例: 緯度 35.6812, 経度 139.7671")
+                    Text("緯度・経度を直接入力するか、Google Maps埋め込みHTMLを貼り付けて座標を抽出できます")
+                }
+
+                // ストリートビューセクション
+                Section {
+                    TextField("ストリートビュー埋め込みHTML", text: $viewModel.streetviewEmbed, axis: .vertical)
+                        .lineLimit(2...4)
+                        .font(.caption)
+                } header: {
+                    Text("ストリートビュー")
+                } footer: {
+                    Text("Google Mapsストリートビューの埋め込みiframeタグを貼り付け")
                 }
             }
             .navigationTitle(viewModel.isNewCompany ? "企業を追加" : "企業を編集")

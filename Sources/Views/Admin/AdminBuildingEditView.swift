@@ -32,15 +32,25 @@ struct AdminBuildingEditView: View {
 
                 // 位置情報セクション
                 Section {
-                    TextField("緯度（必須）", text: $viewModel.latitudeString)
+                    TextField("緯度", text: $viewModel.latitudeString)
                         .keyboardType(.decimalPad)
 
-                    TextField("経度（必須）", text: $viewModel.longitudeString)
+                    TextField("経度", text: $viewModel.longitudeString)
                         .keyboardType(.decimalPad)
+
+                    TextField("地図埋め込みHTML", text: $viewModel.mapEmbed, axis: .vertical)
+                        .lineLimit(2...4)
+                        .font(.caption)
+
+                    if !viewModel.mapEmbed.trimmingCharacters(in: .whitespaces).isEmpty {
+                        Button("埋め込みHTMLから座標を抽出") {
+                            viewModel.extractCoordinatesFromMapEmbed()
+                        }
+                    }
                 } header: {
                     Text("位置情報")
                 } footer: {
-                    Text("例: 緯度 35.6812, 経度 139.7671")
+                    Text("緯度・経度を直接入力するか、Google Maps埋め込みHTMLを貼り付けて座標を抽出できます")
                 }
 
                 // 建物情報セクション
@@ -57,6 +67,30 @@ struct AdminBuildingEditView: View {
                     TextField("設計", text: $viewModel.architect)
 
                     TextField("施工", text: $viewModel.constructor)
+                }
+
+                // 着工・竣工セクション
+                Section {
+                    TextField("着工年月", text: $viewModel.constructionStart)
+                        .keyboardType(.numberPad)
+
+                    TextField("竣工年月", text: $viewModel.completion)
+                        .keyboardType(.numberPad)
+                } header: {
+                    Text("着工・竣工")
+                } footer: {
+                    Text("yyyymm形式で入力（例: 202004）")
+                }
+
+                // ストリートビューセクション
+                Section {
+                    TextField("ストリートビュー埋め込みHTML", text: $viewModel.streetviewEmbed, axis: .vertical)
+                        .lineLimit(2...4)
+                        .font(.caption)
+                } header: {
+                    Text("ストリートビュー")
+                } footer: {
+                    Text("Google Mapsストリートビューの埋め込みiframeタグを貼り付け")
                 }
 
                 // 画像セクション

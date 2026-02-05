@@ -55,6 +55,12 @@ final class AdminBuildingEditViewModel {
     /// 説明文
     var description = ""
 
+    /// 地図埋め込みHTML（Google Maps embed）
+    var mapEmbed = ""
+
+    /// ストリートビュー埋め込みHTML
+    var streetviewEmbed = ""
+
     /// 既存の画像URL
     var existingImageUrls: [String] = []
 
@@ -108,17 +114,44 @@ final class AdminBuildingEditViewModel {
         constructor = building.constructor ?? ""
         constructionStart = building.constructionStart ?? ""
         completion = building.completion ?? ""
+        streetviewEmbed = building.streetviewEmbed ?? ""
         existingImageUrls = building.imageUrls
     }
 
+    // MARK: - 座標抽出
+
+    /// 地図埋め込みHTMLから座標を抽出して緯度・経度に反映
+    func extractCoordinatesFromMapEmbed() {
+        let trimmed = mapEmbed.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+
+        if let coords = GoogleMapsEmbedParser.extractCoordinates(from: trimmed) {
+            latitudeString = String(coords.latitude)
+            longitudeString = String(coords.longitude)
+        }
+    }
+
     // MARK: - バリデーション
+
+    /// 座標が有効かどうか（直接入力またはmap_embedから取得）
+    private var hasValidCoordinates: Bool {
+        if Double(latitudeString) != nil && Double(longitudeString) != nil {
+            return true
+        }
+        // map_embedから座標が取得可能か
+        let trimmed = mapEmbed.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty,
+           GoogleMapsEmbedParser.extractCoordinates(from: trimmed) != nil {
+            return true
+        }
+        return false
+    }
 
     /// 入力バリデーション
     var isValidInput: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty &&
         !address.trimmingCharacters(in: .whitespaces).isEmpty &&
-        Double(latitudeString) != nil &&
-        Double(longitudeString) != nil
+        hasValidCoordinates
     }
 
     /// バリデーションエラーメッセージ
@@ -129,11 +162,8 @@ final class AdminBuildingEditViewModel {
         if address.trimmingCharacters(in: .whitespaces).isEmpty {
             return "住所を入力してください"
         }
-        if Double(latitudeString) == nil {
-            return "緯度を正しく入力してください"
-        }
-        if Double(longitudeString) == nil {
-            return "経度を正しく入力してください"
+        if !hasValidCoordinates {
+            return "緯度・経度を入力するか、地図埋め込みHTMLを入力してください"
         }
         return nil
     }
@@ -203,14 +233,26 @@ final class AdminBuildingEditViewModel {
                 }
             }
 
+            // 座標を決定（直接入力 or map_embedから抽出）
+            var finalLatitude = Double(latitudeString) ?? 0
+            var finalLongitude = Double(longitudeString) ?? 0
+            if finalLatitude == 0 && finalLongitude == 0 {
+                let trimmedEmbed = mapEmbed.trimmingCharacters(in: .whitespaces)
+                if let coords = GoogleMapsEmbedParser.extractCoordinates(from: trimmedEmbed) {
+                    finalLatitude = coords.latitude
+                    finalLongitude = coords.longitude
+                }
+            }
+
             // ビルデータを作成
+            let trimmedStreetview = streetviewEmbed.trimmingCharacters(in: .whitespaces)
             _ = Building(
                 buildingId: originalBuilding?.buildingId ?? UUID().uuidString,
                 name: name.trimmingCharacters(in: .whitespaces),
                 postalCode: postalCode.trimmingCharacters(in: .whitespaces),
                 address: address.trimmingCharacters(in: .whitespaces),
-                latitude: Double(latitudeString) ?? 0,
-                longitude: Double(longitudeString) ?? 0,
+                latitude: finalLatitude,
+                longitude: finalLongitude,
                 height: Double(heightString),
                 floorsAbove: Int(floorsAboveString),
                 floorsBelow: Int(floorsBelowString),
@@ -219,7 +261,7 @@ final class AdminBuildingEditViewModel {
                 constructionStart: constructionStart.isEmpty ? nil : constructionStart,
                 completion: completion.isEmpty ? nil : completion,
                 imageUrls: allImageUrls,
-                streetviewEmbed: originalBuilding?.streetviewEmbed,
+                streetviewEmbed: trimmedStreetview.isEmpty ? nil : trimmedStreetview,
                 createdAt: originalBuilding?.createdAt ?? Date(),
                 updatedAt: Date()
             )

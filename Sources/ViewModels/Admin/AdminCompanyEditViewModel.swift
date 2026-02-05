@@ -39,6 +39,12 @@ final class AdminCompanyEditViewModel {
     /// 経度
     var longitudeString = ""
 
+    /// 地図埋め込みHTML（Google Maps embed）
+    var mapEmbed = ""
+
+    /// ストリートビュー埋め込みHTML
+    var streetviewEmbed = ""
+
     // MARK: - 状態
 
     /// 保存中かどうか
@@ -120,6 +126,19 @@ final class AdminCompanyEditViewModel {
         "会計事務所"
     ]
 
+    // MARK: - 座標抽出
+
+    /// 地図埋め込みHTMLから座標を抽出して緯度・経度に反映
+    func extractCoordinatesFromMapEmbed() {
+        let trimmed = mapEmbed.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+
+        if let coords = GoogleMapsEmbedParser.extractCoordinates(from: trimmed) {
+            latitudeString = String(coords.latitude)
+            longitudeString = String(coords.longitude)
+        }
+    }
+
     // MARK: - 初期化
 
     init(company: Company? = nil) {
@@ -143,17 +162,30 @@ final class AdminCompanyEditViewModel {
         address = company.address
         latitudeString = String(company.latitude)
         longitudeString = String(company.longitude)
+        streetviewEmbed = company.streetviewEmbed ?? ""
     }
 
     // MARK: - バリデーション
+
+    /// 座標が有効かどうか（直接入力またはmap_embedから取得）
+    private var hasValidCoordinates: Bool {
+        if Double(latitudeString) != nil && Double(longitudeString) != nil {
+            return true
+        }
+        let trimmed = mapEmbed.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty,
+           GoogleMapsEmbedParser.extractCoordinates(from: trimmed) != nil {
+            return true
+        }
+        return false
+    }
 
     /// 入力バリデーション
     var isValidInput: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty &&
         !industry.isEmpty &&
         selectedBuildingId != nil &&
-        Double(latitudeString) != nil &&
-        Double(longitudeString) != nil
+        hasValidCoordinates
     }
 
     /// バリデーションエラーメッセージ
@@ -167,11 +199,8 @@ final class AdminCompanyEditViewModel {
         if selectedBuildingId == nil {
             return "本社ビルを選択してください"
         }
-        if Double(latitudeString) == nil {
-            return "緯度を正しく入力してください"
-        }
-        if Double(longitudeString) == nil {
-            return "経度を正しく入力してください"
+        if !hasValidCoordinates {
+            return "緯度・経度を入力するか、地図埋め込みHTMLを入力してください"
         }
         return nil
     }
@@ -210,7 +239,19 @@ final class AdminCompanyEditViewModel {
         errorMessage = nil
 
         do {
+            // 座標を決定（直接入力 or map_embedから抽出）
+            var finalLatitude = Double(latitudeString) ?? 0
+            var finalLongitude = Double(longitudeString) ?? 0
+            if finalLatitude == 0 && finalLongitude == 0 {
+                let trimmedEmbed = mapEmbed.trimmingCharacters(in: .whitespaces)
+                if let coords = GoogleMapsEmbedParser.extractCoordinates(from: trimmedEmbed) {
+                    finalLatitude = coords.latitude
+                    finalLongitude = coords.longitude
+                }
+            }
+
             // 企業データを作成
+            let trimmedStreetview = streetviewEmbed.trimmingCharacters(in: .whitespaces)
             _ = Company(
                 companyId: originalCompany?.companyId ?? UUID().uuidString,
                 name: name.trimmingCharacters(in: .whitespaces),
@@ -219,9 +260,9 @@ final class AdminCompanyEditViewModel {
                 buildingId: selectedBuildingId!,
                 postalCode: postalCode.trimmingCharacters(in: .whitespaces),
                 address: address.trimmingCharacters(in: .whitespaces),
-                latitude: Double(latitudeString) ?? 0,
-                longitude: Double(longitudeString) ?? 0,
-                streetviewEmbed: originalCompany?.streetviewEmbed,
+                latitude: finalLatitude,
+                longitude: finalLongitude,
+                streetviewEmbed: trimmedStreetview.isEmpty ? nil : trimmedStreetview,
                 createdAt: originalCompany?.createdAt ?? Date(),
                 updatedAt: Date()
             )
